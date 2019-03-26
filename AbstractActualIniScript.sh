@@ -1,10 +1,10 @@
 #!/bin/bash
 
-hadoop fs -rm -r hdfs://ssehdp101.biz:8020/Ayolanding/AbstractActualTabIncrementalOut;
+hadoop fs -rm -r -skipTrash /Ayolanding/AbstractActualTabIncrementalOut;
 sqoop job --delete abstractActualImportJob;
 echo "    #####    Sqoop job creation    ######"
 
-sqoop job --create abstractActualImportJob -- import --options-file '/home/hdfs/sqoopimport/connectionDetails.txt' --password-file 'hdfs://ssehdp101.biz:8020/passwd/psw.txt' --table IAASPF.TBL_ABSTRACT_ACTUAL --append --incremental lastmodified --check-column CHANGED_AT --fields-terminated-by '\t' --target-dir hdfs://ssehdp101.metmom.mmih.biz:8020/Ayolanding/AbstractActualTabIncrementalOut -m 1;
+sqoop job --create abstractActualImportJob -- import --options-file '/home/hdfs/sqoopimport/connectionDetails.txt' --password-file '/passwd/psw.txt' --table IAASPF.TBL_ABSTRACT_ACTUAL --append --incremental lastmodified --check-column CHANGED_AT --fields-terminated-by '\t' --target-dir '/Ayolanding/AbstractActualTabIncrementalOut' -m 1;
 if [ $? -eq 0 ]; then
 echo "***************************************************************"
 echo "      Successfully Sqoop Job is created     "
@@ -27,7 +27,7 @@ fi
 hive -e " drop table ayolanding.temp_IAASPF_TBL_ABSTRACT_ACTUAL;"
 hive -e " drop table ayolanding.IAASPF_TBL_ABSTRACT_ACTUAL;"
 
-hive -e "create external table ayolanding.temp_IAASPF_TBL_ABSTRACT_ACTUAL(id bigint,type_discriminator string,version bigint,type_id bigint,uuid string,kind_id bigint,origin_request_id bigint,composite_comp_list_id bigint,index_comp_list int,lb_agreement_version_id bigint,role_in_actual_context_id bigint,only_actual_id bigint,changed_at string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile LOCATION 'hdfs://ssehdp101.biz:8020/Ayolanding/AbstractActualTabIncrementalOut';"
+hive -e "create external table ayolanding.temp_IAASPF_TBL_ABSTRACT_ACTUAL(id bigint,type_discriminator string,version bigint,type_id bigint,uuid string,kind_id bigint,origin_request_id bigint,composite_comp_list_id bigint,index_comp_list int,lb_agreement_version_id bigint,role_in_actual_context_id bigint,only_actual_id bigint,changed_at string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile LOCATION '/Ayolanding/AbstractActualTabIncrementalOut';"
 if [ $? -eq 0 ]; then
 echo "***************************************************************"
 echo "      Successfully External Table is created     "
